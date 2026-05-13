@@ -91,3 +91,25 @@ AVLNode* avl_insert(AVLNode* root, const char* key) {
 
     return root;
 }
+
+void avl_print_inorder(AVLNode* root) {
+    if (root == NULL) return;
+    avl_print_inorder(root->left);
+    printf("    %s\n", root->key);
+    avl_print_inorder(root->right);
+}
+
+int avl_contains(AVLNode* root, const char* key) {
+    if (root == NULL) return 0;
+    int cmp = strcmp(key, root->key);
+    if (cmp < 0) return avl_contains(root->left, key);
+    if (cmp > 0) return avl_contains(root->right, key);
+    return 1;
+}
+
+void avl_free(AVLNode* root) {
+    if (root == NULL) return;
+    avl_free(root->left);
+    avl_free(root->right);
+    free(root);
+}
