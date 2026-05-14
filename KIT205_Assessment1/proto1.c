@@ -34,3 +34,11 @@ static P1Node* p1_find_or_create(P1Table* t, const char* id) {
     t->buckets[idx] = n;
     return n;
 }
+
+void p1_add_relation(P1Table* authors, P1Table* papers,
+    const char* author_id, const char* paper_id) {
+    P1Node* author = p1_find_or_create(authors, author_id);
+    P1Node* paper = p1_find_or_create(papers, paper_id);
+    author->relations = avl_insert(author->relations, paper_id);
+    paper->relations = avl_insert(paper->relations, author_id);
+}
