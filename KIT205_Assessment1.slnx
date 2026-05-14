@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="KIT205_Assessment1/KIT205_Assessment1.vcxproj" />
+  <Project Path="KIT205_Assessment1/KIT205_Assessment1.vcxproj" Id="f1d83d78-5868-4429-ba36-bbd7410fff9b" />
 </Solution>
