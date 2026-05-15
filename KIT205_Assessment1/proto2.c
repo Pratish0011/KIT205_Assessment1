@@ -1,0 +1,36 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "proto2.h"
+
+static int hash(const char* key) {
+    int h = 0;
+    while (*key) {
+        h = (h * 31 + *key) % TABLE_SIZE;
+        key++;
+    }
+    return h;
+}
+
+P2Table* p2_create() {
+    P2Table* t = (P2Table*)calloc(1, sizeof(P2Table));
+    return t;
+}
+
+static P2Node* p2_find_or_create(P2Table* t, const char* id) {
+    int idx = hash(id);
+    P2Node* curr = t->buckets[idx];
+
+    while (curr != NULL) {
+        if (strcmp(curr->id, id) == 0) return curr;
+        curr = curr->next;
+    }
+
+    P2Node* n = (P2Node*)malloc(sizeof(P2Node));
+    strncpy(n->id, id, 19);
+    n->id[19] = '\0';
+    n->relations = NULL;
+    n->next = t->buckets[idx];
+    t->buckets[idx] = n;
+    return n;
+}
