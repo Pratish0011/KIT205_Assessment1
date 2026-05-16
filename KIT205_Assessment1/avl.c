@@ -9,7 +9,7 @@ static int height(AVLNode* n) {
     return n->height;
 }
 
-static int max(int a, int b) {
+static int int_max(int a, int b) {
     return (a > b) ? a : b;
 }
 
