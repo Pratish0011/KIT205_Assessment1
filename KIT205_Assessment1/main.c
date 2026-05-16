@@ -11,21 +11,21 @@ static void make_id(char* buf, char prefix, int num) {
 }
 
 static void run_evaluation() {
-    printf("=============================\n");
-    printf("     PERFORMANCE EVAL\n");
-    printf("  Timed: print papers for A0000\n");
-    printf("=============================\n");
-
     int sizes[] = { 1000, 5000, 10000, 50000, 100000 };
     int s, r, i;
     char aid[20], pid[20];
 
+    printf("=============================\n");
+    printf("     PERFORMANCE EVAL\n");
+    printf("  Timed: print papers for A0000\n");
+    printf("=============================\n");
     printf("  %-10s  %-12s  %-12s\n", "Relations", "P1 AVL(us)", "P2 List(us)");
     printf("  %-10s  %-12s  %-12s\n", "---------", "---------", "----------");
 
     for (s = 0; s < 5; s++) {
         int total = sizes[s];
 
+        /* Build Prototype 1 */
         P1Table* a1 = p1_create();
         P1Table* p1t = p1_create();
         srand(42);
@@ -35,6 +35,7 @@ static void run_evaluation() {
             p1_add_relation(a1, p1t, aid, pid);
         }
 
+        /* Build Prototype 2 */
         P2Table* a2 = p2_create();
         P2Table* p2t = p2_create();
         srand(42);
@@ -44,9 +45,7 @@ static void run_evaluation() {
             p2_add_relation(a2, p2t, aid, pid);
         }
 
-        /* Suppress output during timing */
-        FILE* nul = fopen("NUL", "w");
-
+        /* Time P1 - suppress output to NUL */
         clock_t t1_start = clock();
         for (r = 0; r < 100; r++) {
             freopen("NUL", "w", stdout);
@@ -54,6 +53,7 @@ static void run_evaluation() {
         }
         clock_t t1_end = clock();
 
+        /* Time P2 - suppress output to NUL */
         clock_t t2_start = clock();
         for (r = 0; r < 100; r++) {
             freopen("NUL", "w", stdout);
@@ -61,17 +61,16 @@ static void run_evaluation() {
         }
         clock_t t2_end = clock();
 
-        /* Restore stdout */
+        /* Restore console output */
         freopen("CON", "w", stdout);
-        fclose(nul);
 
         double t1_us = (double)(t1_end - t1_start) / CLOCKS_PER_SEC * 1e6 / 100;
         double t2_us = (double)(t2_end - t2_start) / CLOCKS_PER_SEC * 1e6 / 100;
 
         printf("  %-10d  %-12.2f  %-12.2f\n", total, t1_us, t2_us);
 
-        p1_free(a1); p1_free(p1t);
-        p2_free(a2); p2_free(p2t);
+        p1_free(a1);  p1_free(p1t);
+        p2_free(a2);  p2_free(p2t);
     }
 
     printf("=============================\n\n");
