@@ -64,6 +64,7 @@ static void test_proto1() {
 
     P1Table* authors = p1_create();
     P1Table* papers = p1_create();
+    int i;
 
     p1_add_relation(authors, papers, "A001", "P001");
     p1_add_relation(authors, papers, "A001", "P003");
@@ -71,7 +72,7 @@ static void test_proto1() {
     p1_add_relation(authors, papers, "A002", "P001");
 
     P1Node* found_author = NULL;
-    for (int i = 0; i < TABLE_SIZE; i++) {
+    for (i = 0; i < TABLE_SIZE; i++) {
         P1Node* curr = authors->buckets[i];
         while (curr != NULL) {
             if (strcmp(curr->id, "A001") == 0) found_author = curr;
@@ -87,7 +88,7 @@ static void test_proto1() {
     }
 
     P1Node* found_paper = NULL;
-    for (int i = 0; i < TABLE_SIZE; i++) {
+    for (i = 0; i < TABLE_SIZE; i++) {
         P1Node* curr = papers->buckets[i];
         while (curr != NULL) {
             if (strcmp(curr->id, "P001") == 0) found_paper = curr;
@@ -110,6 +111,59 @@ static void test_proto1() {
     check("Proto1 free (no crash)", 1);
 }
 
+static void test_proto2() {
+    printf("\n[Prototype 2 - Hash Table of Linked Lists]\n");
+
+    P2Table* authors = p2_create();
+    P2Table* papers = p2_create();
+    int i;
+
+    p2_add_relation(authors, papers, "A001", "P001");
+    p2_add_relation(authors, papers, "A001", "P003");
+    p2_add_relation(authors, papers, "A001", "P002");
+    p2_add_relation(authors, papers, "A002", "P001");
+
+    P2Node* found_author = NULL;
+    for (i = 0; i < TABLE_SIZE; i++) {
+        P2Node* curr = authors->buckets[i];
+        while (curr != NULL) {
+            if (strcmp(curr->id, "A001") == 0) found_author = curr;
+            curr = curr->next;
+        }
+    }
+
+    check("A001 exists in authors table", found_author != NULL);
+    if (found_author != NULL) {
+        check("A001 has P001", list_contains(found_author->relations, "P001"));
+        check("A001 has P002", list_contains(found_author->relations, "P002"));
+        check("A001 has P003", list_contains(found_author->relations, "P003"));
+        check("A001 list head is P001 (sorted)", strcmp(found_author->relations->key, "P001") == 0);
+    }
+
+    P2Node* found_paper = NULL;
+    for (i = 0; i < TABLE_SIZE; i++) {
+        P2Node* curr = papers->buckets[i];
+        while (curr != NULL) {
+            if (strcmp(curr->id, "P001") == 0) found_paper = curr;
+            curr = curr->next;
+        }
+    }
+    check("P001 exists in papers table", found_paper != NULL);
+    if (found_paper != NULL) {
+        check("P001 has A001", list_contains(found_paper->relations, "A001"));
+        check("P001 has A002", list_contains(found_paper->relations, "A002"));
+    }
+
+    printf("  Papers by A001 (expect P001 P002 P003):\n");
+    p2_print_relations(authors, "A001");
+    printf("  Authors of P001 (expect A001 A002):\n");
+    p2_print_relations(papers, "P001");
+
+    p2_free(authors);
+    p2_free(papers);
+    check("Proto2 free (no crash)", 1);
+}
+
 void run_all_tests() {
     printf("=============================\n");
     printf("       UNIT TESTS\n");
@@ -121,6 +175,7 @@ void run_all_tests() {
     test_avl();
     test_list();
     test_proto1();
+    test_proto2();
 
     printf("\n=============================\n");
     printf("  %d passed, %d failed\n", passed, failed);
