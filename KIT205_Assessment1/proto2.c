@@ -42,3 +42,58 @@ void p2_add_relation(P2Table* authors, P2Table* papers,
     author->relations = list_insert(author->relations, paper_id);
     paper->relations = list_insert(paper->relations, author_id);
 }
+
+void p2_print_all(P2Table* t) {
+    char ids[10000][20];
+    int count = 0;
+
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        P2Node* curr = t->buckets[i];
+        while (curr != NULL) {
+            strncpy(ids[count], curr->id, 19);
+            count++;
+            curr = curr->next;
+        }
+    }
+
+    for (int i = 0; i < count - 1; i++) {
+        for (int j = 0; j < count - i - 1; j++) {
+            if (strcmp(ids[j], ids[j + 1]) > 0) {
+                char tmp[20];
+                strcpy(tmp, ids[j]);
+                strcpy(ids[j], ids[j + 1]);
+                strcpy(ids[j + 1], tmp);
+            }
+        }
+    }
+
+    for (int i = 0; i < count; i++) {
+        printf("  %s\n", ids[i]);
+    }
+}
+
+void p2_print_relations(P2Table* t, const char* id) {
+    int idx = hash(id);
+    P2Node* curr = t->buckets[idx];
+    while (curr != NULL) {
+        if (strcmp(curr->id, id) == 0) {
+            list_print(curr->relations);
+            return;
+        }
+        curr = curr->next;
+    }
+    printf("  (not found)\n");
+}
+
+void p2_free(P2Table* t) {
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        P2Node* curr = t->buckets[i];
+        while (curr != NULL) {
+            P2Node* tmp = curr;
+            list_free(curr->relations);
+            curr = curr->next;
+            free(tmp);
+        }
+    }
+    free(t);
+}
