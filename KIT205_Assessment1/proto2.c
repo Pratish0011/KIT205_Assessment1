@@ -34,3 +34,11 @@ static P2Node* p2_find_or_create(P2Table* t, const char* id) {
     t->buckets[idx] = n;
     return n;
 }
+
+void p2_add_relation(P2Table* authors, P2Table* papers,
+    const char* author_id, const char* paper_id) {
+    P2Node* author = p2_find_or_create(authors, author_id);
+    P2Node* paper = p2_find_or_create(papers, paper_id);
+    author->relations = list_insert(author->relations, paper_id);
+    paper->relations = list_insert(paper->relations, author_id);
+}
