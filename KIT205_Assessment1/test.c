@@ -5,6 +5,7 @@
 #include "avl.h"
 #include "linkedlist.h"
 #include "proto1.h"
+#include "proto2.h"
 
 static int passed = 0;
 static int failed = 0;

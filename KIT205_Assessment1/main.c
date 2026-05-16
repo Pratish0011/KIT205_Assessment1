@@ -44,18 +44,26 @@ static void run_evaluation() {
             p2_add_relation(a2, p2t, aid, pid);
         }
 
-        /* Time P1 - suppress output by using a counter trick */
+        /* Suppress output during timing */
+        FILE* nul = fopen("NUL", "w");
+
         clock_t t1_start = clock();
         for (r = 0; r < 100; r++) {
+            freopen("NUL", "w", stdout);
             p1_print_relations(a1, "A0000");
         }
         clock_t t1_end = clock();
 
         clock_t t2_start = clock();
         for (r = 0; r < 100; r++) {
+            freopen("NUL", "w", stdout);
             p2_print_relations(a2, "A0000");
         }
         clock_t t2_end = clock();
+
+        /* Restore stdout */
+        freopen("CON", "w", stdout);
+        fclose(nul);
 
         double t1_us = (double)(t1_end - t1_start) / CLOCKS_PER_SEC * 1e6 / 100;
         double t2_us = (double)(t2_end - t2_start) / CLOCKS_PER_SEC * 1e6 / 100;
